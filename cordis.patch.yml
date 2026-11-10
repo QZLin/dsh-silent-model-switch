@@ -1,0 +1,4 @@
+- insert:
+    - id: dsh-silent-model-switch
+      name: dsh-silent-model-switch
+      config: {}

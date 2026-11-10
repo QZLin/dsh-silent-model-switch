@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Silent model switch",
+    "description": "Removes model-switch notices before they enter model requests."
+  }
+}

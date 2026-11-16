@@ -128,6 +128,10 @@ dist
 # pnpm
 .pnpm-store
 
+# npm lockfile: this project resolves with pnpm (pnpm-lock.yaml). The migration
+# Action installs with npm, so a package-lock.json would otherwise be committed.
+package-lock.json
+
 # yarn v3
 .pnp.*
 .yarn/*

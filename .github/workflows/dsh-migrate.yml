@@ -1,0 +1,52 @@
+name: dsh-migrate
+
+on:
+  workflow_dispatch:
+    inputs:
+      dsh_release:
+        description: Target dsh release (empty = latest)
+        required: false
+        type: string
+      bump_again:
+        description: Repeat a processed release (not while its proposal PR is open)
+        required: false
+        type: boolean
+        default: false
+
+# The supplied PAT grants write access; keep the workflow's own token read-only.
+permissions:
+  contents: read
+
+concurrency:
+  group: dsh-migrate-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check repository token
+        env:
+          DSH_MIGRATE_GITHUB_TOKEN: ${{ secrets.DSH_MIGRATE_GITHUB_TOKEN }}
+        run: |
+          if [ -z "$DSH_MIGRATE_GITHUB_TOKEN" ]; then
+            echo "::error::Add the DSH_MIGRATE_GITHUB_TOKEN repository Actions secret."
+            exit 1
+          fi
+
+      - name: Checkout plugin
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          token: ${{ secrets.DSH_MIGRATE_GITHUB_TOKEN }}
+          persist-credentials: true
+
+      - name: Bump versions and run checks (no LLM)
+        id: migrate
+        uses: QZLin/dsh-migrate-bot@c3314bbe440e023320236c12207649626ecadfc3 # v2.0.0
+        with:
+          command: bump
+          target: ${{ inputs.dsh_release || 'latest' }}
+          force: ${{ inputs.bump_again }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.DSH_MIGRATE_GITHUB_TOKEN }}

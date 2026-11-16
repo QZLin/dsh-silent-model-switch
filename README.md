@@ -61,6 +61,26 @@ pnpm run pack:check
 - `@deepseek-ai/cordis` 4.1.x
 - `@deepseek-ai/dsh-agent` 0.2.2-rc.1
 
+## 手动升级检查
+
+[迁移工作流](<.github/workflows/dsh-migrate.yml>) 固定使用 [QZLin/dsh-migrate-bot v2.0.0](https://github.com/QZLin/dsh-migrate-bot/releases/tag/v2.0.0) 对应的提交，仅保留 `workflow_dispatch`；没有定时、push、PR 或其他事件触发。
+
+该版本不调用 LLM，也不自动修复插件源码：只更新 DSH 依赖范围和插件 patch 版本，并运行现有的 build、typecheck、test 及启动检查。检查失败时提交草稿 PR，由维护者手动处理。不需要 DeepSeek API key。
+
+在仓库 Settings → Secrets and variables → Actions 中设置 `DSH_MIGRATE_GITHUB_TOKEN`。使用仅授权本仓库的 fine-grained PAT，授予 Contents、Issues、Pull requests 的读写权限。工作流通过此 Secret 推送提案并创建 PR，不将 PAT 写入代码，也不要求开启默认 `GITHUB_TOKEN` 的 PR 创建权限。
+
+配置合并到默认分支后，在 Actions → dsh-migrate → Run workflow 手动运行，或使用 GitHub CLI：
+
+```sh
+# 目标为空时使用最新的 dsh release。
+gh workflow run dsh-migrate.yml
+
+# 指定目标 release；必要时重新处理已运行的版本。
+gh workflow run dsh-migrate.yml -f dsh_release=dsh-v0.2.2-rc.1 -f bump_again=true
+```
+
+工作流固定 Action 提交以避免静默更新；升级 bot 时需显式更新固定提交。迁移结果和检查输出见运行摘要及提案 PR，`dsh-migrate/state` 分支用于保存记录，不要合并到默认分支。
+
 ## License
 
 MIT

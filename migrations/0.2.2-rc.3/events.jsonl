@@ -28,3 +28,4 @@
 {"kind":"event","at":"2026-11-16T11:34:14.141Z","event":{"type":"check.done","result":{"check":"web","outcome":"skipped","fingerprint":"","detail":"the plugin declares no dsh.client surface or preset"}}}
 {"kind":"event","at":"2026-11-16T11:34:14.151Z","event":{"type":"tree.inspected","changed":true,"files":1}}
 {"kind":"event","at":"2026-11-16T11:34:18.480Z","event":{"type":"proposal.published","proposal":{"branch":"dsh-migrate/proposal","headSha":"a32886187abae14e998aa523ffc03db4232f6c66","issue":{"number":1,"url":"https://github.com/QZLin/dsh-silent-model-switch/issues/1"},"pullRequest":{"number":4,"url":"https://github.com/QZLin/dsh-silent-model-switch/pull/4"},"draft":false}}}
+{"kind":"event","at":"2026-11-16T12:11:11.825Z","event":{"type":"pull-request.closed","number":4,"merged":false}}

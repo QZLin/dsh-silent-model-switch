@@ -12,6 +12,11 @@ on:
         required: false
         type: boolean
         default: false
+      auto_merge:
+        description: Merge the proposal when every check passed (a draft proposal is always left alone)
+        required: false
+        type: boolean
+        default: true
 
 # Creates the proposal branch, issue and pull request with the repository token.
 # It needs the repository setting "Allow GitHub Actions to create and approve
@@ -73,3 +78,32 @@ jobs:
           fi
           git commit -m 'chore: refresh the lockfile and version references'
           git push origin HEAD:refs/heads/dsh-migrate/proposal
+
+      # Only a proposal whose every check passed arrives here as a ready pull
+      # request: a failing one is a draft, and a draft is left for the maintainer.
+      - name: Merge the proposal
+        if: steps.migrate.outputs.status == 'proposed' && inputs.auto_merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_URL: ${{ steps.migrate.outputs.pull_request_url }}
+        run: |
+          if [ -z "$PR_URL" ]; then
+            echo "the migration published no pull request"
+            exit 0
+          fi
+          if [ "$(gh pr view "$PR_URL" --json isDraft --jq .isDraft)" = "true" ]; then
+            echo "the proposal is a draft because a check failed: leaving it for the maintainer"
+            exit 0
+          fi
+          # GitHub computes a fresh push's mergeability asynchronously, so the
+          # first attempt can see it unknown.
+          for attempt in 1 2 3 4 5 6; do
+            if gh pr merge "$PR_URL" --squash; then
+              echo "merged $PR_URL"
+              exit 0
+            fi
+            echo "merge attempt $attempt did not succeed yet; retrying"
+            sleep 10
+          done
+          echo "::error::could not merge the proposal automatically; merge it by hand"
+          exit 1

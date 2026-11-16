@@ -69,6 +69,8 @@ pnpm run pack:check
 
 bot 本身只改 `package.json`。工作流在它之后追加两个确定性步骤，把提案补全为可直接合并的状态：`pnpm install --lockfile-only` 刷新 `pnpm-lock.yaml`，[scripts/sync-metadata.mjs](<scripts/sync-metadata.mjs>) 把 README 兼容性列表中的 `@deepseek-ai/*` 版本改成 manifest 声明的版本（`4.1.x` 这类只写到次版本的引用在次版本未变时保持原样）。两者都没有变化时不会产生多余提交。
 
+检查全部通过的提案会被自动 squash 合并进默认分支，无需人工确认；这一步对合并结果没有复核环节，只有在你需要先看 diff 时才应关闭。若某个检查失败，bot 打开的是 **草稿** PR，自动合并会跳过它，留给你手动处理。手动运行时可用 `auto_merge=false` 只生成提案而不合并。
+
 在仓库 Settings → Actions → General → Workflow permissions 中启用 **Allow GitHub Actions to create and approve pull requests**。工作流使用仓库自带的 `GITHUB_TOKEN`（`contents`、`issues`、`pull-requests` 写权限）推送提案分支、创建 issue 和 PR，因此不需要额外创建 PAT 或 Secret。缺少该开关时推送和建 issue 都会成功，只有建 PR 会返回 HTTP 403。
 
 配置合并到默认分支后，在 Actions → dsh-migrate → Run workflow 手动运行，或使用 GitHub CLI：

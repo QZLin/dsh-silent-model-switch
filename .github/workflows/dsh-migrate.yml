@@ -13,9 +13,13 @@ on:
         type: boolean
         default: false
 
-# The supplied PAT grants write access; keep the workflow's own token read-only.
+# Creates the proposal branch, issue and pull request with the repository token.
+# It needs the repository setting "Allow GitHub Actions to create and approve
+# pull requests"; without it the pull request call fails with HTTP 403.
 permissions:
-  contents: read
+  contents: write
+  issues: write
+  pull-requests: write
 
 concurrency:
   group: dsh-migrate-${{ github.repository }}
@@ -26,19 +30,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
-      - name: Check repository token
-        env:
-          DSH_MIGRATE_GITHUB_TOKEN: ${{ secrets.DSH_MIGRATE_GITHUB_TOKEN }}
-        run: |
-          if [ -z "$DSH_MIGRATE_GITHUB_TOKEN" ]; then
-            echo "::error::Add the DSH_MIGRATE_GITHUB_TOKEN repository Actions secret."
-            exit 1
-          fi
-
       - name: Checkout plugin
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          token: ${{ secrets.DSH_MIGRATE_GITHUB_TOKEN }}
           persist-credentials: true
 
       - name: Bump versions and run checks (no LLM)
@@ -49,4 +43,4 @@ jobs:
           target: ${{ inputs.dsh_release || 'latest' }}
           force: ${{ inputs.bump_again }}
         env:
-          GITHUB_TOKEN: ${{ secrets.DSH_MIGRATE_GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}

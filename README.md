@@ -67,7 +67,7 @@ pnpm run pack:check
 
 该版本不调用 LLM，也不自动修复插件源码：只更新 DSH 依赖范围和插件 patch 版本，并运行现有的 build、typecheck、test 及启动检查。检查失败时提交草稿 PR，由维护者手动处理。不需要 DeepSeek API key。
 
-在仓库 Settings → Secrets and variables → Actions 中设置 `DSH_MIGRATE_GITHUB_TOKEN`。使用仅授权本仓库的 fine-grained PAT，授予 Contents、Issues、Pull requests 的读写权限。工作流通过此 Secret 推送提案并创建 PR，不将 PAT 写入代码，也不要求开启默认 `GITHUB_TOKEN` 的 PR 创建权限。
+在仓库 Settings → Actions → General → Workflow permissions 中启用 **Allow GitHub Actions to create and approve pull requests**。工作流使用仓库自带的 `GITHUB_TOKEN`（`contents`、`issues`、`pull-requests` 写权限）推送提案分支、创建 issue 和 PR，因此不需要额外创建 PAT 或 Secret。缺少该开关时推送和建 issue 都会成功，只有建 PR 会返回 HTTP 403。
 
 配置合并到默认分支后，在 Actions → dsh-migrate → Run workflow 手动运行，或使用 GitHub CLI：
 

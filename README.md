@@ -63,9 +63,9 @@ pnpm run pack:check
 
 ## 手动升级检查
 
-[迁移工作流](<.github/workflows/dsh-migrate.yml>) 固定使用 [QZLin/dsh-migrate-bot v2.0.0](https://github.com/QZLin/dsh-migrate-bot/releases/tag/v2.0.0) 对应的提交，仅保留 `workflow_dispatch`；没有定时、push、PR 或其他事件触发。
+[迁移工作流](<.github/workflows/dsh-migrate.yml>) 固定使用 [QZLin/dsh-migrate-bot v3.0.1](https://github.com/QZLin/dsh-migrate-bot/releases/tag/v3.0.1) 对应的提交，仅保留 `workflow_dispatch`；没有定时、push、PR 或其他事件触发。
 
-该版本不调用 LLM，也不自动修复插件源码：只更新 DSH 依赖范围和插件 patch 版本，并运行现有的 build、typecheck、test 及启动检查。检查失败时提交草稿 PR，由维护者手动处理。不需要 DeepSeek API key。
+该版本不调用 LLM，也不自动修复插件源码：只更新 DSH 依赖范围和插件 patch 版本，并运行现有的 build、typecheck、test 及启动检查。检查失败时提交草稿 PR，由维护者手动处理。不需要 DeepSeek API key。v3 起 Action 为 composite 型，每次运行在 runner 上安装 Node 与 pnpm 后自源码构建，不再拉取容器镜像。
 
 bot 本身只改 `package.json`。工作流在它之后追加两个确定性步骤，把提案补全为可直接合并的状态：`pnpm install --lockfile-only` 刷新 `pnpm-lock.yaml`，[scripts/sync-metadata.mjs](<scripts/sync-metadata.mjs>) 把 README 兼容性列表中的 `@deepseek-ai/*` 版本改成 manifest 声明的版本（`4.1.x` 这类只写到次版本的引用在次版本未变时保持原样）。两者都没有变化时不会产生多余提交。
 

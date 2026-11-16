@@ -37,7 +37,7 @@ jobs:
 
       - name: Bump versions and run checks (no LLM)
         id: migrate
-        uses: QZLin/dsh-migrate-bot@c3314bbe440e023320236c12207649626ecadfc3 # v2.0.0
+        uses: QZLin/dsh-migrate-bot@4b4ead58dd66e44a5966dc80c47ae45dc238afdc # v3.0.1
         with:
           command: bump
           target: ${{ inputs.dsh_release || 'latest' }}
@@ -45,13 +45,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
-      # The Action edits manifests only and leaves the checkout on the proposal
-      # branch. The lockfile and the README's version references follow it here,
-      # so a merged proposal leaves the repository consistent.
-      - name: Take ownership of the checkout
-        if: steps.migrate.outputs.status == 'proposed'
-        run: sudo chown -R "$(id -u):$(id -g)" .
-
+      # The Action is a composite one: it edits manifests and leaves the checkout
+      # on the proposal branch, as the runner's own user. The lockfile and the
+      # README's version references follow it here, so a merged proposal leaves
+      # the repository consistent.
       - name: Set up pnpm
         if: steps.migrate.outputs.status == 'proposed'
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4

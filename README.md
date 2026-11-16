@@ -67,6 +67,8 @@ pnpm run pack:check
 
 该版本不调用 LLM，也不自动修复插件源码：只更新 DSH 依赖范围和插件 patch 版本，并运行现有的 build、typecheck、test 及启动检查。检查失败时提交草稿 PR，由维护者手动处理。不需要 DeepSeek API key。
 
+bot 本身只改 `package.json`。工作流在它之后追加两个确定性步骤，把提案补全为可直接合并的状态：`pnpm install --lockfile-only` 刷新 `pnpm-lock.yaml`，[scripts/sync-metadata.mjs](<scripts/sync-metadata.mjs>) 把 README 兼容性列表中的 `@deepseek-ai/*` 版本改成 manifest 声明的版本（`4.1.x` 这类只写到次版本的引用在次版本未变时保持原样）。两者都没有变化时不会产生多余提交。
+
 在仓库 Settings → Actions → General → Workflow permissions 中启用 **Allow GitHub Actions to create and approve pull requests**。工作流使用仓库自带的 `GITHUB_TOKEN`（`contents`、`issues`、`pull-requests` 写权限）推送提案分支、创建 issue 和 PR，因此不需要额外创建 PAT 或 Secret。缺少该开关时推送和建 issue 都会成功，只有建 PR 会返回 HTTP 403。
 
 配置合并到默认分支后，在 Actions → dsh-migrate → Run workflow 手动运行，或使用 GitHub CLI：

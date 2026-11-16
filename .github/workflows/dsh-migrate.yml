@@ -44,3 +44,35 @@ jobs:
           force: ${{ inputs.bump_again }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
+
+      # The Action edits manifests only and leaves the checkout on the proposal
+      # branch. The lockfile and the README's version references follow it here,
+      # so a merged proposal leaves the repository consistent.
+      - name: Take ownership of the checkout
+        if: steps.migrate.outputs.status == 'proposed'
+        run: sudo chown -R "$(id -u):$(id -g)" .
+
+      - name: Set up pnpm
+        if: steps.migrate.outputs.status == 'proposed'
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          run_install: false
+
+      - name: Refresh the lockfile and version references
+        if: steps.migrate.outputs.status == 'proposed'
+        run: |
+          node scripts/sync-metadata.mjs
+          pnpm install --lockfile-only --ignore-scripts --no-frozen-lockfile
+
+      - name: Commit them to the proposal
+        if: steps.migrate.outputs.status == 'proposed'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --all
+          if git diff --cached --quiet; then
+            echo "the lockfile and the version references are already current"
+            exit 0
+          fi
+          git commit -m 'chore: refresh the lockfile and version references'
+          git push origin HEAD:refs/heads/dsh-migrate/proposal

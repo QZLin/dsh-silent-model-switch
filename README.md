@@ -59,7 +59,7 @@ pnpm run pack:check
 当前代码针对以下公开 API 编译和验证：
 
 - `@deepseek-ai/cordis` 4.1.x
-- `@deepseek-ai/dsh-agent` 0.2.2-rc.3
+- `@deepseek-ai/dsh-agent` 0.2.2-rc.4
 
 ## 手动升级检查
 

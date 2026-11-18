@@ -42,7 +42,7 @@ jobs:
 
       - name: Bump versions and run checks (no LLM)
         id: migrate
-        uses: QZLin/dsh-migrate-bot@4b4ead58dd66e44a5966dc80c47ae45dc238afdc # v3.0.1
+        uses: QZLin/dsh-migrate-bot@v3 # v3.0.1
         with:
           command: bump
           target: ${{ inputs.dsh_release || 'latest' }}

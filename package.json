@@ -1,6 +1,6 @@
 {
   "name": "dsh-silent-model-switch",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Silently removes model-selection notices before DeepSeek Harness sends a model request.",
   "license": "MIT",
   "private": true,
@@ -37,15 +37,15 @@
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "~4.1.0",
-    "@deepseek-ai/dsh-agent": "^0.2.0-0 || ^0.2.1-0 || ^0.2.2-0"
+    "@deepseek-ai/dsh-agent": "^0.2.0-0 || ^0.2.1-0 || ^0.2.2-0 || ^0.2.3-alpha.3"
   },
   "devDependencies": {
     "@deepseek-ai/cordis": "4.1.0",
-    "@deepseek-ai/dsh-agent": "^0.2.2-rc.5",
+    "@deepseek-ai/dsh-agent": "^0.2.3-alpha.3",
     "typescript": "^5.9.3"
   },
   "engines": {
     "node": ">=20",
-    "dsh": "^0.2.0-0 || ^0.2.1-0 || ^0.2.2-0"
+    "dsh": "^0.2.0-0 || ^0.2.1-0 || ^0.2.2-0 || ^0.2.3-alpha.3"
   }
 }
